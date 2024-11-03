@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const { Schema } = mongoose;
+const validator = require('validator');
 
 const userSchema = new Schema({
     firstName: {
@@ -14,15 +15,40 @@ const userSchema = new Schema({
         type: String,
         required: true,
         unique: true,
+        validate(value) {
+            if(!validator.isEmail(value)) {
+                throw new Error('Invalid Email Address');
+            }
+        }
     },
     password: {
         type: String,
         required: true,
+        minLength: 6,
+
+        maxLength: 20,
+        validate(value) {
+            if(!validator.isStrongPassword(value)) {
+                throw new Error('Enter the strong password');
+            }
+        }
+    },
+    confirmPassword: {
+        type: String,
+        required: true,
+        minLength: 6,
+        maxLength: 20,
+        validate(value) {
+            if(!validator.isStrongPassword(value)) {
+                throw new Error('Enter the strong password');
+            }
+        }
     },
     accountType: {
         type: String,
         enum: ['Student', 'Instructor', 'Admin'],
-        require: 'true',
+
+        required: true,
     },
     additionalDetails: {
         type: mongoose.Schema.Types.ObjectId,
@@ -56,4 +82,5 @@ const userSchema = new Schema({
         default: Date.now,
     },
 });
+
 module.exports = mongoose.model('User', userSchema);

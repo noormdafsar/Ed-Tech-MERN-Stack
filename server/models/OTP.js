@@ -19,21 +19,21 @@ const OTPSchema = new Schema({
 });
 
 //logic for sending email
-// const sendEmailVerification = async (email, otp) => {
-//     try {
-//         const mailResponse = await mailSender(email, 'Verification Email', emailTemplate(otp));
-//         console.log('Email sent successfully...!!!', mailResponse.response);
-//     }
-//     catch(error) {
-//         console.log(error);
-//         throw new Error('ERROR while sending the mail',error.message);
-//     }
-// }
+const sendEmailVerification = async (email, otp) => {
+    try {
+        const mailResponse = await mailSender(email, 'Verification Email', emailTemplate(otp));
+        console.log('Email sent successfully...!!!', mailResponse.response);
+    }
+    catch(error) {
+        console.log(error);
+        throw new Error('ERROR while sending the mail',error.message);
+    }
+}
 
 OTPSchema.pre('save',async function(next) {
     console.log('New document saved to database');
     // Only send an email when a new document is created
-    await mailSender(this.email, 'Verification Email', `Your OTP is ${this.otp}`);
+    await sendEmailVerification(this.email, this.otp);
     next();
 })
 
