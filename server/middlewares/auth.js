@@ -78,6 +78,24 @@ const studentAuth = async (req, res) => {
 
 // isInstructor authentication
 
+const instructorAuth = async (req, res) => {
+    try {
+        if(req.user.accountType !== 'Instructor') {
+            return res.status(400).json({
+                success: false,
+                message: 'This is a protected route for instructor',
+            });
+        }
+    }
+    catch(error) {
+        console.log(error);
+        return res.status(400).json({
+            success: false,
+            message: 'User is not authenticated',
+        });
+    }
+}
+
 module.exports = {
-    userAuth,
+    userAuth, adminAuth, studentAuth, instructorAuth
 };
