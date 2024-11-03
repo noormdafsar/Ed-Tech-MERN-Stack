@@ -110,4 +110,4 @@ const resetPasword = async (req, res) => {
     }
 }
 
-module.exports = resetPasswordToken;
+module.exports = resetPasswordToken, resetPasword;
