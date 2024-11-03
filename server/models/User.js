@@ -77,6 +77,12 @@ const userSchema = new Schema({
             },
         },
     ],
+    token: {
+        type: String,
+    },
+    resetPasswordExpires: {
+        type: Date,
+    },
     createdAt: {
         type: Date,
         default: Date.now,
@@ -86,6 +92,7 @@ const userSchema = new Schema({
         default: Date.now,
     },
 });
+
 
 userSchema.methods.getJWT =  async function(){
     const user = this;
