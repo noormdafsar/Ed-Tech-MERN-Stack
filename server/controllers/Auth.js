@@ -89,7 +89,57 @@ const signup = async (req, res) => {
 
 // Login
 
+const login = async ( req, res ) => {
+    try {
+        // fetch email and password from req.body
+        const { email, password } = req.body;
+        // check if email and password are present
+        if(!email || !password) {
+            return res.status(400).json({
+                success: false,
+                message: 'Email and Password are required',
+            });
+        }
+        // check if user exist
+        const user = await User.findOne({ email }).populate('additionalDetails');
+        if(!user) {
+            return res.status(400).json({
+                success: false,
+                message: 'User is not registered with this email so please signup to continue',
+            });
+        }
+        // crete a jwt token and compare the password
+        const isPasswordValid = await user.validatePassword(password);
+        if(isPasswordValid) {
+            const token = await user.getJWT();
+            // set the cookie and send the response
+            res.cookie("token", token, {
+                expires: new Date(Date.now() + 8 * 3600000),
+                httpOnly: true,
+              });
+              res.status(200).json({
+                success: true,
+                message: 'User logged in successfully',
+                token,
+                user,
+            });
+        }
+        else {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid credentials',
+        });
+    }
 
+    }
+    catch(error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error while logging in',
+        });
+    }
+}
 
 // Send OTP
 const sendOTP = async (req, res) => {
