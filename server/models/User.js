@@ -90,7 +90,14 @@ const userSchema = new Schema({
 userSchema.methods.getJWT =  async function(){
     const user = this;
     // create a jwt token with the help of user id and secret key
-    const token = await jwt.sign({ _id: user._id }, process.env.JWT_TOKEN, {expiresIn: '7d',});
+    const payload = {
+         _id: user._id, 
+         accountType: user.acccountType, 
+         email: user.email,
+    }
+    const token = await jwt.sign(
+        payload, 
+        process.env.JWT_TOKEN, {expiresIn: '7d',});
     return token;
 }
 

@@ -38,7 +38,23 @@ const userAuth = async (req, res, next) => {
 }
 
 // isAdmin authentication
-
+const adminAuth = async (req, res) => {
+    try {
+        if(req.user.accountType !== 'Admin') {
+            return res.status(400).json({
+                success: false,
+                message: 'This is a protected route for admin',
+            });
+        }
+    }
+    catch(error) {
+        console.log(error);
+        return res.status(400).json({
+            success: false,
+            message: 'User is not authenticated',
+        });
+    }
+}
 
 // isStudent authentication
 
