@@ -35,7 +35,7 @@ const signup = async (req, res) => {
         }
 
         // find the most recent otp stored in db for user
-        const recentOtp = await Otp.findOne({ email }).sort({ createdAt: -1 });
+        const recentOtp = await Otp.findOne({ email }).sort({ createdAt: -1 }).limit(1);
         // validate otp
         if(recentOtp.length == 0 ) {
             return res.status(400).json({
