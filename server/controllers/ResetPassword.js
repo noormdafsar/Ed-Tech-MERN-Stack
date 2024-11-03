@@ -46,11 +46,68 @@ const resetPasswordToken = async (req, res) => {
         console.log(error);
         return res.status(500).json({
             success: false,
-            message: 'Error while resetting the password',
+            message: 'Error while resetting the password token',
         });
     }
 }
 
 // reset password
+const resetPasword = async (req, res) => {
+    try {
+        // fetch data
+        const { password, confirmPassword, token } = req.body;
+        // validation
+        if(password !== confirmPassword) {
+            return res.status(400).json({
+                success: false,
+                message: 'Password and confirm password do not match',
+            });
+        }
+        // get user details from db using token
+        const userDetails = await User.findOne({ token: token });
+        // if no entry, invalid token
+        if(!userDetails) {
+            return res.status(400).json({
+                success: false,
+                message: 'Token is invalid',
+            });
+        }
+        // check token time
+        if(userDetails.resetPasswordExpires < Date.now()) {
+            return res.status(400).json({
+                success: false,
+                message: 'Token is expired, please regenerate your token',
+            });
+        }
+        // hash the new password
+        const hashedPassword = await bcrypt.hash(password, 10);
+        // update password
+        await User.findOneAndUpdate(
+            { token: token },
+            { password: hashedPassword },
+            { new: true }
+        );
+        // send email
+        await mailSender(
+            userDetails.email,
+            'Password Reset Successful',
+            'Password Reset Successfully'
+        );
+        // save in db
+        await userDetails.save();
+        // return response
+        return res.status(200).json({
+            success: true,
+            message: 'Password reset successfully...!!!',
+        });
+    }
+    catch(error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error while resetting the password',
+        });
+    }
+}
 
 module.exports = resetPasswordToken;
