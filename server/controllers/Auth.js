@@ -3,6 +3,7 @@ const Profile = require('../models/Profile');
 const Otp = require('../models/Otp');
 const otpGenerator = require('otp-generator');
 const bcrypt = require('bcrypt');
+const mailSender = require('../utils/mailSender');
 
 
 
@@ -178,7 +179,61 @@ const sendOTP = async (req, res) => {
     }
 }
 
+// changePassword
+const changePassword = async (req, res) => {
+    try {
+        // fetch user data from req.body
+        const userDetails = await User.findOne({ _id: req.user.id });
+        // get old password and new password from req.body
+        const { oldPassword, newPassword } = req.body;
+        // validate old password
+        const isPasswordMatch = await bcrypt.compare(oldPassword, userDetails.password);
+        if(!isPasswordMatch) {
+            return res.status(400).json({
+                success: false,
+                message: 'This is an invalid old password',
+            });
+        }
+        // hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        // update the password
+       const updatedUserDetails = await User.findOneAndUpdate(
+        { _id: req.user.id }, 
+        { password: hashedPassword },
+        { new: true },
+        );
+        return res.status(200).json({
+            success: true,
+            message: 'Password changed successfully',
+        });
+        // send email for password change
+        try {
+            const emailResponse = await mailSender(
+                'Password for your account has been updated',
+                updatedUserDetails.email,
+                updatedPassword(updatedUserDetails.email, 
+                    `${updatedUserDetails.firstName}` `${updatedUserDetails.lastName} Your password updated successfully`,),
+            );
+            console.log('Email sent successfully: ', emailResponse);
+            return
+        }
+        catch(error) {
+            console.log(error);
+            return res.status(500).json({
+                success: false,
+                message: 'Error while sending email',
+            });
+        }
+    }
+    catch(error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: 'Error while changing password',
+        });
+    }
+}
 
 module.exports = { 
-    signup, sendOTP, login,
+    signup, sendOTP, login, changePassword,
 };
