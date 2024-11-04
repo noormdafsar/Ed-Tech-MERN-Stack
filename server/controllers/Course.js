@@ -96,3 +96,35 @@ const creatCourse = async (req, res) => {
         });
     }
 }
+
+// get all courses or show all courses
+const getAllCourses = async (req, res) => {
+    try {
+        const allCourses = await Course.find({}, {
+            courseName: true,
+            courseDescription: true,
+            price: true,
+            thumbnail: true,
+            instructor: true,
+            ratingAndReviews: true,
+            category: true,
+            studentsEnrolled: true,
+        }).populate('instructor').exec();
+        return res.status(200).json({
+            success: true,
+            message: 'All courses fetched successfully',
+            data: allCourses,
+        });
+    }
+    catch(error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error while fetching all the courses',
+        });
+    }
+}
+
+module.exports = {
+    creatCourse,
+    getAllCourses,
+}
