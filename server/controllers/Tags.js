@@ -31,4 +31,25 @@ const createTag = async (req, res) => {
     }
 }
 
+const showAllTags = async (req, res) => {
+    try {
+        const allTags = await Tag.find({}, {name: true, description: true})
+        return res.status(200).json({
+            success: true,
+            message: 'All tags fetched successfully',
+            data: allTags,
+        })
+    }
+    catch(error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error while fetching all the tags',
+        });
+    }
+}
+
+module.exports = {
+    createTag,
+    showAllTags,
+}
 
