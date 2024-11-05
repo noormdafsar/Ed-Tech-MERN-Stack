@@ -1,55 +1,55 @@
-const Tag = require('../models/tags');
+const Category = require('../models/Category');
 
-const createTag = async (req, res) => {
+const createCategory = async (req, res) => {
     try {
         // fetch data 
         const { name, description } = req.body;
-        // check if tag already exist
+        // check if category already exist
         if(!name || !description) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required',
             });
         }
-        // create tag
-        const tagDetails = await Tag.create({
+        // create category
+        const categoryDetails = await Category.create({
             name: name,
             description: description,
         });
-        console.log('Tag Details:', tagDetails);
+        console.log('Category Details:', categoryDetails);
         // return response
         return res.status(200).json({
             success: true,
-            message: 'Tag created successfully',
+            message: 'Category created successfully',
         });
     }
     catch(error) {
         return res.status(500).json({
             success: false,
-            message: 'Error while creating the tag',
+            message: 'Error while creating the Category',
         });
     }
 }
 
-const showAllTags = async (req, res) => {
+const showAllCategory = async (req, res) => {
     try {
-        const allTags = await Tag.find({}, {name: true, description: true})
+        const allCategory = await Category.find({}, {name: true, description: true})
         return res.status(200).json({
             success: true,
-            message: 'All tags fetched successfully',
-            data: allTags,
+            message: 'All categories fetched successfully',
+            data: allCategory,
         })
     }
     catch(error) {
         return res.status(500).json({
             success: false,
-            message: 'Error while fetching all the tags',
+            message: 'Error while fetching all the categories',
         });
     }
 }
 
 module.exports = {
-    createTag,
-    showAllTags,
+    createCategory,
+    showAllCategory,
 }
 

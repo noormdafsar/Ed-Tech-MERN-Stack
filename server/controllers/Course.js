@@ -2,16 +2,16 @@ const Course = require('../models/Course');
 const User = require('../models/user');
 const { uploadImageToCloudinary } = require('../utils/imageUploader');
 const Category = require('../models/Category');
-const Tag = require('../models/Tag');
+// const Tag = require('../models/Tag');
 
 const creatCourse = async (req, res) => {
     try {
         // fetch data
-        const { courseName, courseDescription, whatYouWillLearn, price, tag, category, thumbnail } = req.body;
+        const { courseName, courseDescription, whatYouWillLearn, price, category, thumbnail } = req.body;
         // get thumbnail
         const thumbnailImage = req.files.thumbnailImage;
         // validation
-        if(!courseName || !courseDescription || !whatYouWillLearn || !price || !tag || !category || !thumbnailImage) {
+        if(!courseName || !courseDescription || !whatYouWillLearn || !price || !category || !thumbnailImage) {
             return res.status(400).json({
                 success: false,
                 message: 'All fields are required',
@@ -35,12 +35,12 @@ const creatCourse = async (req, res) => {
                 message: 'Course already exist',
             });
         }
-        // check if tags exist
-        const tagDetails = await Tag.findById(tag);
-        if(!tagDetails) {
+        // check if categories exist
+        const categoryDetails = await Category.findById(category);
+        if(!categoryDetails) {
             return res.status(400).json({
                 success: false,
-                message: 'Tag does not exist',
+                message: 'Category does not exist',
             });
         }
         // upload thumbnail to cloudinary
@@ -52,8 +52,8 @@ const creatCourse = async (req, res) => {
             courseDescription,
             whatYouWillLearn: whatYouWillLearn,
             price,
-            tag: tagDetails._id,
-            category,
+            // tag: tagDetails._id,
+            category: categoryDetails._id,
             instructor: userDetails._id,
             thumbnail: thumbnailDetails.secure_url,
         });
@@ -69,10 +69,11 @@ const creatCourse = async (req, res) => {
         },
         { new: true }
     );
-    // update the tag schema
-    const updatedTagDetails = await Tag.findByIdAndUpdate(
+    console.log('Updated User Details: ', updatedUserDetails)
+    // update the category schema
+    const updatedCategoryDetails = await Category.findByIdAndUpdate(
         {
-            _id: tagDetails._id,
+            _id: categoryDetails._id,
         },
         {
             $push: {
@@ -81,7 +82,7 @@ const creatCourse = async (req, res) => {
         },
         { new: true }
     );
-    console.log('Updated Tag Details:', updatedTagDetails);
+    console.log('Updated Category Details:', updatedCategoryDetails);
     return res.status(200).json({
         success: true,
         message: 'New Course created successfully...!!!',
