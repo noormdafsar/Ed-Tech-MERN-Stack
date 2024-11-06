@@ -56,7 +56,43 @@ const updateProfile = async (req, res) => {
     }
 }
 
+// delete Account
+const deleteAccount = async (req, res) => {
+    try {
+        // fetch data
+        const id = req.user.id;
+        // validation
+        const userDetails = await User.findById(id);
+        if(!userDetails) {
+            return res.status(400).json({
+                success: false,
+                message: 'User not found',
+            });
+        }
+        // delete profile
+        await Profile.findByIdAndDelete({_id: userDetails.additionalDetails});
+        // TODO: how to enroll the user from all the courses
+        // delete user
+        await User.findByIdAndDelete({_id: id});
+        // return response
+        return res.status(200).json({
+            success: true,
+            message: 'Account deleted successfully',
+        });
+    }
+    catch(error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error while deleting the account',
+            error: error.message,
+        });
+    }
+}
+
 module.exports = {
     updateProfile,
+    deleteAccount,
 }
+
+
 
