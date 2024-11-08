@@ -99,4 +99,5 @@ const getAverageRating = async ( req, res ) => {
 
 module.exports = {
     createRating,
+    getAverageRating,
 }
