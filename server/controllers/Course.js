@@ -99,7 +99,7 @@ const creatCourse = async (req, res) => {
 }
 
 // get all courses or show all courses
-const getAllCourses = async (req, res) => {
+const showAllCourses = async (req, res) => {
     try {
         const allCourses = await Course.find({}, {
             courseName: true,
@@ -125,7 +125,60 @@ const getAllCourses = async (req, res) => {
     }
 }
 
+const getCourseDetails = async (req, res) => {
+    try {
+        // get course id
+        const { courseId } = req.body;
+        // get course details
+        const courseDetails = await Course.findById(
+                                        {_id:courseId})
+                                        .populate(
+                                            {
+                                                path: 'instructor',
+                                                populate: {
+                                                    path: 'additionalDetails',
+                                                },
+                                            }
+                                        )
+                                        .populate('category')
+                                        .populate(
+                                            {
+                                                path: 'ratingAndReviews',
+                                                populate: {
+                                                    path: 'user',
+                                                },
+                                            }
+                                        )
+                                        .populate(
+                                            {
+                                                path: 'courseContent',
+                                                populate: {
+                                                    path: 'subSection',
+                                                },
+                                            }
+                                        )
+                                       .exec();
+        // validation
+        if(!courseDetails) {
+            return res.status(404).json({
+                success: false,
+                message: 'Course not found',
+            });
+        }
+        return res.status(200).json({
+            success: true,
+            message: 'Course details fetched successfully',
+            data: courseDetails,
+        });
+
+    }
+    catch(error) {
+
+    }
+}
+
 module.exports = {
     creatCourse,
-    getAllCourses,
+    showAllCourses,
+    getCourseDetails,
 }
