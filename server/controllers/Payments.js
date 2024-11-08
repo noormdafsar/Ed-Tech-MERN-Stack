@@ -3,6 +3,7 @@ const user  = require('../models/user');
 const Course = require('../models/Course');
 const mailSender = require('nodemailer');
 const { courseEnrollment } = require('../mailTempletes/courseEnrollment');
+require('dotenv').config();
 
 const capturePayment = async ( req, res ) => {
     try {
@@ -86,7 +87,66 @@ const capturePayment = async ( req, res ) => {
     }
 }
 
+const verifyPayment = async ( req, res ) => {
+    try {
+        const webhookSecret = process.env.WEBHOOK_SECRET;
+        const signature = req.headers['x-razorpay-signature'];
+        
+        const shasum = crypto.createHmac('sha256', webhookSecret);
+        shasum.update(JSON.stringify(req.body));
+        const digest = shasum.digest('hex');
+        if(digest !== signature) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid request signature',
+            });
+        }
+        else {
+            try {
+                // full fill the action
+                // userId to course enrollment
+                const enrolledCourse = await Course.findByIdAndUpdate(
+                                                    { _id:courseId },
+                                                    { $push: { studentsEnrolled: userId } },
+                                                    { new: true },
+                );
+                if(!enrolledCourse) {
+                    return res.status.json({
+                        success: false,
+                        message: 'Course not found',
+                    });
+                }
+                // send the email to the user
+                const mailResponse = await mailSender.sendMail(
+                                    enrolledStudent.email,
+                                    courseEnrollment(enrolledCourse.name, enrolledCourse.description),
+                                    'Congralutations! from Ed-tech platform',
+                                    'Congratulations!, you are onboarded into the new course',
+                )
+                console.log(mailResponse);
+                return res.status(200).json({
+                    success: true,
+                    message: 'Payment verified successfully',
+                });
+
+            }
+            catch(error) {
+                return res.status(500).json({
+                    success: false,
+                    message: 'Error while enrollment' +error.message,
+                });
+            }
+        }
+    }
+    catch(error) {
+        return res.status(500).json({
+            success: false,
+            message: 'Error while verifying the payment' +error.message,
+        });
+    }
+}
+
 
 module.exports = {
-    capturePayment,
+    capturePayment, verifyPayment,
 }
