@@ -1,7 +1,7 @@
 const { instance } = require('../config/razorpay');
 const user  = require('../models/user');
 const Course = require('../models/Course');
-const nodemailer = require('nodemailer');
+const mailSender = require('nodemailer');
 const { courseEnrollment } = require('../mailTempletes/courseEnrollment');
 
 const capturePayment = async ( req, res ) => {
