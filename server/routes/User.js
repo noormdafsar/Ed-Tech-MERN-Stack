@@ -1,16 +1,27 @@
 const express = require('express');
 const router = express.Router();
 
-const { signup, login, changePassword } = require('../controllers/Auth');
+// Import controllers
+const { signup, login, sendOTP, changePassword } = require('../controllers/Auth');
+console.log({
+    signup: !!signup,
+    login: !!login,
+    sendOTP: !!sendOTP,
+    changePassword: !!changePassword,
+});
 const { resetPasswordToken, resetPassword } = require('../controllers/ResetPassword');
-const { userAuth, adminAuth, studentAuth, instructorAuth } = require('../middlewares/auth');
+const { auth } = require('../middlewares/auth');
 
-// user routes
+// Verify controllers before using them
+console.log("Auth Controllers:", { signup, login, changePassword });
+console.log("Reset Controllers:", { resetPasswordToken, resetPassword });
+
+// Define routes 
 router.post('/signup', signup);
 router.post('/login', login);
-router.post('/changepassword', userAuth, changePassword);
+router.post('/sendotp', sendOTP);
+router.post('/changepassword', auth, changePassword);
 router.post('/reset-password-token', resetPasswordToken);
 router.post('/reset-password', resetPassword);
 
 module.exports = router;
-

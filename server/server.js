@@ -1,4 +1,5 @@
 const express = require('express');
+const app = express();
 const dotenv = require('dotenv');
 const cors = require('cors');
 const connectDB = require('./config/database');
@@ -27,7 +28,6 @@ app.use(cors({
 }));
 
 // express.json and express-fileUpload are two middleware
-const app = express();
 
 app.use(cookieParser());
 

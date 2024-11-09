@@ -30,3 +30,4 @@ router.post('/getCategoryPageDetails', categoryPageDetails);
 // courses
 router.get('/getAllCourses', getAllCourses);
 
+module.exports = router;
