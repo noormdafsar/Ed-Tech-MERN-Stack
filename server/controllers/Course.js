@@ -99,7 +99,7 @@ const creatCourse = async (req, res) => {
 }
 
 // get all courses or show all courses
-const showAllCourses = async (req, res) => {
+const getAllCourses = async (req, res) => {
     try {
         const allCourses = await Course.find({}, {
             courseName: true,
