@@ -89,6 +89,9 @@ const deleteAccount = async (req, res) => {
     }
 }
 
+// get all user details
+
+
 module.exports = {
     updateProfile,
     deleteAccount,
