@@ -80,6 +80,8 @@ const categoryPageDetails = async ( req, res ) => {
             select: 'courseName courseDescription thumbnail status',
         })
         .exec();
+        // TODO: get top selling courses
+        // const  topSellingCourses = await Course.find({ })
         // prepare the response
         const categories = await Category.find({})
         .populate({
@@ -89,6 +91,7 @@ const categoryPageDetails = async ( req, res ) => {
             select: 'courseName courseDescription thumbnail status',
         })
         .exec();
+        console.log('categories:', categories);
         const allCategories = await Category.find({})
         .populate({
             path: 'courses',
