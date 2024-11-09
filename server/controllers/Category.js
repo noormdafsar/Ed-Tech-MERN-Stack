@@ -120,5 +120,6 @@ const categoryPageDetails = async ( req, res ) => {
 module.exports = {
     createCategory,
     showAllCategory,
+    categoryPageDetails,
 }
 
