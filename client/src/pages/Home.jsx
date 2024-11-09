@@ -1,6 +1,7 @@
 import React from 'react'
 import { BiRightArrowAlt } from 'react-icons/bi';
 import { Link } from 'react-router-dom'
+import HighlightText from '../components/HighlightText';
 
 const Home = () => {
   return (
@@ -17,7 +18,12 @@ const Home = () => {
                         <BiRightArrowAlt />
                     </div>
                 </div>
+
             </Link>
+            <div>
+                Empower Your Future with
+                <HighlightText text={'Coding Skills'} />
+            </div>
         </div>
 
 
